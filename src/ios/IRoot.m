@@ -96,22 +96,27 @@ enum {
 
     if ([[NSFileManager defaultManager] fileExistsAtPath:@"/Applications/Cydia.app"])
     {
+        NSLog(@"jail > has cydia");
         return YES;
     }
     else if ([[NSFileManager defaultManager] fileExistsAtPath:@"/Library/MobileSubstrate/MobileSubstrate.dylib"])
     {
+        NSLog(@"jail > has mobilesubstrate");
         return YES;
     }
     else if ([[NSFileManager defaultManager] fileExistsAtPath:@"/bin/bash"])
     {
+        NSLog(@"jail > has bin/bash");
         return YES;
     }
     else if ([[NSFileManager defaultManager] fileExistsAtPath:@"/usr/sbin/sshd"])
     {
+        NSLog(@"jail > has sshd");
         return YES;
     }
     else if ([[NSFileManager defaultManager] fileExistsAtPath:@"/etc/apt"])
     {
+        NSLog(@"jail > has apt");
         return YES;
     }
 
@@ -167,6 +172,7 @@ enum {
         (f = fopen("/usr/lib/libcycript.dylib", "r"))
         )  {
         fclose(f);
+        NSLog(@"jail > has suspicious files");
         return YES;
     }
     fclose(f);
@@ -181,6 +187,7 @@ enum {
     if (error == nil)
     {
         [[NSFileManager defaultManager] removeItemAtPath:testWritePath error:nil];
+        NSLog(@"jail > test write");
         return YES;
     }
     else
@@ -190,6 +197,7 @@ enum {
 
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"cydia://package/com.example.package"]])
     {
+        NSLog(@"jail > open package");
         return YES;
     }
 
@@ -199,6 +207,7 @@ enum {
        || lstat("/var/stash/usr/include", &s) || lstat("/var/stash/usr/libexec", &s)  || lstat("/var/stash/usr/share", &s) || lstat("/var/stash/usr/arm-apple-darwin9", &s))
     {
         if(s.st_mode & S_IFLNK){
+            NSLog(@"jail > symbolic link");
             return YES;
         }
     }
@@ -214,6 +223,7 @@ enum {
         //Wrote?: JB device
         //cleanup what you wrote
         [[NSFileManager defaultManager] removeItemAtPath:@"/private/test_jb.txt" error:nil];
+        NSLog(@"jail > test write private");
         return YES;
     }
 
@@ -224,74 +234,87 @@ enum {
     // URL Check
     if ([self urlCheck] != NOTJAIL) {
         // Jailbroken
+        NSLog(@"jail > url check");
         motzart += 3;
     }
 
     // Cydia Check
     if ([self cydiaCheck] != NOTJAIL) {
         // Jailbroken
+        NSLog(@"jail > cydia check");
         motzart += 3;
     }
 
     // Inaccessible Files Check
     if ([self inaccessibleFilesCheck] != NOTJAIL) {
         // Jailbroken
+        NSLog(@"jail > inaccessible files check");
         motzart += 2;
     }
 
     // Plist Check
     if ([self plistCheck] != NOTJAIL) {
         // Jailbroken
+        NSLog(@"jail > plist check");
         motzart += 2;
     }
 
     // Processes Check
     if ([self processesCheck] != NOTJAIL) {
         // Jailbroken
+        NSLog(@"jail > process check");
         motzart += 2;
     }
 
     // FSTab Check
     if ([self fstabCheck] != NOTJAIL) {
         // Jailbroken
+        NSLog(@"jail > fstab check");
         motzart += 1;
     }
 
     // Shell Check
     if ([self systemCheck] != NOTJAIL) {
         // Jailbroken
+        NSLog(@"jail > system check");
         motzart += 2;
     }
 
     // Symbolic Link Check
     if ([self symbolicLinkCheck] != NOTJAIL) {
         // Jailbroken
+        NSLog(@"jail > symbolic link check");
         motzart += 2;
     }
 
     // FilesExist Integrity Check
     if ([self filesExistCheck] != NOTJAIL) {
         // Jailbroken
+        NSLog(@"jail > file exist check");
         motzart += 2;
     }
 
     if ([self checkFork] != NOTJAIL) {
         // Frida
+        NSLog(@"jail > check fork");
         motzart += 2;
     }
 
     if ([self isFridaRunning] != NOTJAIL) {
         // Frida
+        NSLog(@"jail > frida");
         motzart += 2;
     }
 
     if ([self isFridaInjected] != NOTJAIL) {
         // Frida
+        NSLog(@"jail > frida injected");
         motzart += 2;
     }
 
     if ([self isDebugged] != NOTJAIL) {
         // Jailbroken
+        NSLog(@"jail > is debugged");
         motzart += 2;
     }
 
@@ -303,11 +326,12 @@ enum {
     // Check if the Jailbreak Integer is 3 or more
     if (motzart >= 3) {
         // Jailbroken
+        NSLog(@"jail > motzart more than 3");
         return YES;
     }
 
 #endif
-
+    NSLog(@"jail > is iphone simulator");
     return NO;
 }
 

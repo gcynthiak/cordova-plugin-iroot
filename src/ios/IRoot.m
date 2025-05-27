@@ -14,7 +14,7 @@
 #include <sys/socket.h>
 #include <mach-o/dyld.h>
 #include <sys/types.h>
-#include <sys/ptrace.h>
+// #include <sys/ptrace.h>
 
 
 
@@ -295,6 +295,11 @@ enum {
         motzart += 2;
     }
 
+    // if ([self ptraceCheck] != NOTJAIL) {
+    //     // Jailbroken
+    //     motzart += 2;
+    // }
+
     // Check if the Jailbreak Integer is 3 or more
     if (motzart >= 3) {
         // Jailbroken
@@ -308,6 +313,19 @@ enum {
 
 
 #pragma mark - Static Jailbreak Checks
+
+// Detect for ptrace
+// - (int)ptraceCheck {
+//     @try {
+//         if (ptrace(PT_DENY_ATTACH, 0, 0, 0) == -1) {
+//             return KFSystem;
+//         }
+//         return NOTJAIL;
+//     }
+//     @catch (NSException *exception) {
+//         return NOTJAIL;
+//     }
+// }
 
 // Detect if the process is being debugged
 - (int)isDebugged {

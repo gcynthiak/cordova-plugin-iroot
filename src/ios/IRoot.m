@@ -94,30 +94,31 @@ enum {
 
 #if !(TARGET_IPHONE_SIMULATOR)
 
-    if ([[NSFileManager defaultManager] fileExistsAtPath:@"/Applications/Cydia.app"])
-    {
-        return YES;
-    }
-    else if ([[NSFileManager defaultManager] fileExistsAtPath:@"/Library/MobileSubstrate/MobileSubstrate.dylib"])
-    {
-        return YES;
-    }
-    else if ([[NSFileManager defaultManager] fileExistsAtPath:@"/bin/bash"])
-    {
-        return YES;
-    }
-    else if ([[NSFileManager defaultManager] fileExistsAtPath:@"/usr/sbin/sshd"])
-    {
-        return YES;
-    }
-    else if ([[NSFileManager defaultManager] fileExistsAtPath:@"/etc/apt"])
-    {
-        return YES;
+    NSArray *jailbreakpaths = @[
+        @"/Applications/Cydia.app",
+        @"/Applications/Sileo.app",
+        @"/Library/MobileSubstrate/MobileSubstrate.dylib",
+        @"/bin/bash",
+        @"/usr/sbin/sshd",
+        @"/etc/apt",
+        @"/private/var/lib/apt/",
+        @"/private/var/tmp/cydia.log",
+        @"/var/lib/sileo",
+        @"/var/jb", // modern iOS & rootless
+        @"/usr/libexec/sileo",
+        @"/opt/procursus" // rootless package manager location
+    ];
+
+    for (NSString *path in jailbreakpaths) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+            return YES;
+        }
     }
 
     FILE *f = NULL ;
     if ((f = fopen("/bin/bash", "r")) ||
         (f = fopen("/Applications/Cydia.app", "r")) ||
+        (f = fopen("Applications/Sileo.app", "r")) ||
         (f = fopen("/Library/MobileSubstrate/MobileSubstrate.dylib", "r")) ||
         (f = fopen("/usr/sbin/sshd", "r")) ||
         (f = fopen("/etc/apt", "r")) ||
@@ -137,6 +138,8 @@ enum {
         (f = fopen("/var/cache/apt", "r")) ||
         (f = fopen("/var/lib/apt", "r")) ||
         (f = fopen("/var/lib/cydia", "r")) ||
+        (f = fopen("/var/lib/sileo", "r")) ||
+        (f = fopen("/var/jb", "r")) ||
         (f = fopen("/var/log/syslog", "r")) ||
         (f = fopen("/var/tmp/cydia.log", "r")) ||
 
@@ -145,6 +148,7 @@ enum {
         (f = fopen("/usr/libexec/ssh-keysign", "r")) ||
         (f = fopen("/usr/bin/sshd", "r")) ||
         (f = fopen("/usr/libexec/sftp-server", "r")) ||
+        (f = fopen("/usr/libexec/sileo", "r")) ||
 
         (f = fopen("/etc/ssh/sshd_config", "r")) ||
         (f = fopen("/etc/apt", "r")) ||
@@ -164,7 +168,9 @@ enum {
         (f = fopen("/usr/bin/frida-server", "r")) ||
         (f = fopen("/usr/local/bin/cycript", "r")) ||
 
-        (f = fopen("/usr/lib/libcycript.dylib", "r"))
+        (f = fopen("/usr/lib/libcycript.dylib", "r")) ||
+
+        (f = fopen("/opt/procursus", "r"))
         )  {
         fclose(f);
         return YES;
@@ -189,6 +195,11 @@ enum {
     }
 
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"cydia://package/com.example.package"]])
+    {
+        return YES;
+    }
+
+    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"sileo://package/com.example.package"]])
     {
         return YES;
     }
@@ -347,7 +358,9 @@ enum {
     @try {
         for (uint32_t i = 0; i < _dyld_image_count(); i++) {
             const char *dyld = _dyld_get_image_name(i);
-            if (strstr(dyld, "FridaGadget")) {
+            if (strstr(dyld, "FridaGadget") ||
+                strstr(dyld, "frida") ||
+                strstr(dyld, "gum-js-loop")) {
                 return KFSystem;
             }
         }

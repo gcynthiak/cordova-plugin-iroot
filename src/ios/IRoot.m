@@ -290,10 +290,10 @@ enum {
         motzart += 2;
     }
 
-    if ([self isDebugged] != NOTJAIL) {
-        // Jailbroken
-        motzart += 2;
-    }
+    // if ([self isDebugged] != NOTJAIL) {
+    //     // Jailbroken
+    //     motzart += 2;
+    // }
 
     // if ([self ptraceCheck] != NOTJAIL) {
     //     // Jailbroken
@@ -328,19 +328,19 @@ enum {
 // }
 
 // Detect if the process is being debugged
-- (int)isDebugged {
-    @try {
-        struct kinfo_proc info;
-        int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
-        size_t size = sizeof(info);
-        sysctl(mib, 4, &info, &size, NULL, 0);
-        return (info.kp_proc.p_flag & P_TRACED) != 0 ? KFSystem : NOTJAIL;
-    }
-    @catch (NSException *exception) {
-        // Error, return false
-        return NOTJAIL;
-    }
-}
+// - (int)isDebugged {
+//     @try {
+//         struct kinfo_proc info;
+//         int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
+//         size_t size = sizeof(info);
+//         sysctl(mib, 4, &info, &size, NULL, 0);
+//         return (info.kp_proc.p_flag & P_TRACED) != 0 ? KFSystem : NOTJAIL;
+//     }
+//     @catch (NSException *exception) {
+//         // Error, return false
+//         return NOTJAIL;
+//     }
+// }
 
 // Detect FridaGadget
 - (int)isFridaInjected {
